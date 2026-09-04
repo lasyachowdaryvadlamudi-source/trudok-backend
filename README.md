@@ -1,6 +1,6 @@
-# VeriLens Backend — AI-Based Fake Identity & Document Screening System (SIH26188)
+# TruDok Backend — AI-Based Fake Identity & Document Screening System (SIH26188)
 
-Production-ready FastAPI backend powering **VeriLens**, built for the Ministry of Home Affairs / Sashastra Seema Bal (SSB), Police II Division.
+Production-ready FastAPI backend powering **TruDok**, built for the Ministry of Home Affairs / Sashastra Seema Bal (SSB), Police II Division.
 
 ---
 
@@ -54,7 +54,7 @@ The API will be available at:
 ## ☁️ Deployment on Render.com (Free Tier)
 
 1. Create a new **Web Service** on [Render.com](https://render.com).
-2. Connect the repository and select the `verilens-backend` root.
+2. Connect the repository and select the `trudok-backend` root.
 3. Set the **Build Command**: `pip install -r requirements.txt`
 4. Set the **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-5. Copy the generated public URL (e.g. `https://verilens-backend.onrender.com`) and set it as `VITE_API_URL` in the frontend Vercel environment variables.
+5. Copy the generated public URL (`https://trudok-backend.onrender.com`) and set it as `VITE_API_URL` in the frontend Vercel environment variables.
