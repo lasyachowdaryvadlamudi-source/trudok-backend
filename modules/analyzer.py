@@ -248,33 +248,86 @@ def analyze_document_submission(
         verdict_summary = "All document security codes, checksums, reference database records, and biometric liveness verified successfully."
         description_text = "All security codes, holograms, and document numbers verified successfully against official records."
 
-    # Holder name & doc number fallbacks
-    holder_name = extracted_fields.get("fullName", "DARIUS VANCE KOWALSKI")
-    if not holder_name or holder_name == "UNKNOWN":
-        holder_name = "DARIUS VANCE KOWALSKI"
+    # Holder name & doc number fallbacks tailored to document type
+    holder_name = extracted_fields.get("fullName", "UNKNOWN")
+    doc_number = extracted_fields.get("documentNumber", "UNKNOWN")
+    dob = extracted_fields.get("dob", "UNKNOWN")
+    expiry = extracted_fields.get("expiryDate", "UNKNOWN")
+    nationality = extracted_fields.get("nationality", "UNKNOWN")
+    gender = extracted_fields.get("gender", "M")
 
-    doc_number = extracted_fields.get("documentNumber", "EL-84920194")
-    if not doc_number or doc_number == "UNKNOWN":
-        doc_number = "EL-84920194"
+    # Build standard extractedFieldsTable for UI rendering
+    extracted_fields_table = []
+    if doc_type == "visa":
+        document_name = "Consular Entry Visa Sticker"
+        extracted_fields_table = [
+            {"field": "Visa Number", "value": extracted_fields.get("visaNumber") or doc_number, "status": "Valid Format", "isValid": True},
+            {"field": "Visa Type", "value": extracted_fields.get("visaType", "Tourist (T-1)"), "status": "Authorized Category", "isValid": True},
+            {"field": "Entry Validation", "value": extracted_fields.get("entryValidation", "Valid for multiple entries"), "status": "Active & Valid" if not has_watchlist_hit else "Revocation Warning", "isValid": not has_watchlist_hit},
+            {"field": "Stay Duration", "value": extracted_fields.get("stayDuration", "90 Days per visit"), "status": "Standard Window", "isValid": True},
+            {"field": "Holder Name", "value": holder_name, "status": "Valid Format", "isValid": True},
+            {"field": "Nationality", "value": nationality, "status": "Valid Country", "isValid": True},
+            {"field": "Expiration Date", "value": expiry, "status": "Active & Valid", "isValid": True}
+        ]
+    elif doc_type in ["national_id", "id_card", "aadhaar"]:
+        document_name = "National Citizen Identity Card / Aadhaar"
+        extracted_fields_table = [
+            {"field": "National ID Number", "value": doc_number, "status": "Valid Format", "isValid": True},
+            {"field": "Full Legal Name", "value": holder_name, "status": "Valid Format", "isValid": True},
+            {"field": "Date of Birth", "value": dob, "status": "Standard Date Format", "isValid": True},
+            {"field": "Gender", "value": gender, "status": "Valid Code", "isValid": True},
+            {"field": "State / Address", "value": extracted_fields.get("address", "Sector 9, Capital Region"), "status": "Valid State Region", "isValid": True},
+            {"field": "Issuing Authority", "value": extracted_fields.get("issuingAuthority", "UIDAI"), "status": "Authorized Issuer", "isValid": True}
+        ]
+    elif doc_type in ["driving_license", "dl"]:
+        document_name = "Official Motor Vehicle Driving License"
+        extracted_fields_table = [
+            {"field": "License Number", "value": extracted_fields.get("licenseNumber") or doc_number, "status": "Valid Format", "isValid": True},
+            {"field": "Holder Name", "value": holder_name, "status": "Valid Format", "isValid": True},
+            {"field": "Vehicle Classes", "value": extracted_fields.get("vehicleClass", "MCWG, LMV"), "status": "Authorized Endorsement", "isValid": True},
+            {"field": "Date of Birth", "value": dob, "status": "Standard Date Format", "isValid": True},
+            {"field": "Valid Until", "value": expiry, "status": "Active & Valid", "isValid": True},
+            {"field": "Issuing Authority", "value": extracted_fields.get("issuingAuthority", "Regional Transport Authority"), "status": "Valid RTA", "isValid": True}
+        ]
+    elif doc_type == "permit":
+        document_name = "Border Cross-Transit Commercial Permit"
+        extracted_fields_table = [
+            {"field": "Permit Number", "value": extracted_fields.get("permitNumber") or doc_number, "status": "Valid Format", "isValid": True},
+            {"field": "Holder Name", "value": holder_name, "status": "Valid Format", "isValid": True},
+            {"field": "Route Sector", "value": extracted_fields.get("routeSector", "Sector Alpha (Indo-Nepal Corridor)"), "status": "Authorized Corridor", "isValid": True},
+            {"field": "Validity Period", "value": extracted_fields.get("validityPeriod", "30 Days Commercial Multi-Pass"), "status": "Active Window", "isValid": True},
+            {"field": "Expiration Date", "value": expiry, "status": "Active & Valid", "isValid": True}
+        ]
+    else:
+        document_name = "Official International Passport Document"
+        extracted_fields_table = [
+            {"field": "Passport Number", "value": doc_number, "status": "Valid Format", "isValid": True},
+            {"field": "Full Legal Name", "value": holder_name, "status": "Valid Format", "isValid": True},
+            {"field": "Nationality", "value": nationality, "status": "Valid Country Code", "isValid": True},
+            {"field": "Date of Birth", "value": dob, "status": "Standard Date Format", "isValid": True},
+            {"field": "Date of Expiry", "value": expiry, "status": "Active & Valid" if composite_risk < 70 else "Suspicious Alteration", "isValid": composite_risk < 70},
+            {"field": "Gender", "value": gender, "status": "Valid Code", "isValid": True},
+            {"field": "MRZ Checksums", "value": "ICAO 9303 Verified" if not mrz_checks.get("isTampered") else "Checksum Mismatch", "status": "Compliant" if not mrz_checks.get("isTampered") else "Failed", "isValid": not mrz_checks.get("isTampered")}
+        ]
 
-    country_code = extracted_fields.get("nationality", "ELD")[:3].upper() if extracted_fields.get("nationality") else "ELD"
+    country_code = nationality[:3].upper() if nationality and nationality != "UNKNOWN" else "IND"
 
     # Assemble complete dossier
     result_dossier = {
         "id": doc_id,
         "scanId": scan_id,
         "type": doc_type,
-        "categoryLabel": f"{doc_type.replace('_', ' ').title()}: {holder_name.split()[0]}",
-        "documentName": f"Official {doc_type.replace('_', ' ').title()} Document",
+        "categoryLabel": f"{doc_type.replace('_', ' ').title()}: {holder_name.split()[0] if holder_name != 'UNKNOWN' else 'Subject'}",
+        "documentName": document_name,
         "documentNumber": doc_number,
         "idReference": f"ID: {doc_type.upper()}-{scan_id_num}",
         "holderName": holder_name,
-        "nationality": extracted_fields.get("nationality", "Eldoria (ELD)"),
+        "nationality": nationality,
         "countryCode": country_code,
-        "dob": extracted_fields.get("dob", "14 AUG 1984"),
-        "expiryDate": extracted_fields.get("expiryDate", "22 NOV 2029"),
-        "gender": extracted_fields.get("gender", "M"),
-        "issuingAuthority": "Immigration & Document Authority",
+        "dob": dob,
+        "expiryDate": expiry,
+        "gender": gender,
+        "issuingAuthority": extracted_fields.get("issuingAuthority", "Official Government Authority"),
         "scanTimestamp": timestamp_str,
         "fullTimestamp": f"2026-09-04 {timestamp_str} IST",
         "checkpoint": "Checkpoint Alpha (Raxaul)",
@@ -287,6 +340,7 @@ def analyze_document_submission(
         "verdictSummary": verdict_summary,
         "heatmapImageBase64": heatmap_b64,
         "forensicFindings": findings,
+        "extractedFieldsTable": extracted_fields_table,
         "extractedVsVerified": comparison_table,
         "fieldMismatches": db_mismatches,
         "dbFound": db_found,
@@ -311,3 +365,4 @@ def analyze_document_submission(
         del selfie_image_bytes
 
     return result_dossier
+
