@@ -262,6 +262,7 @@ async def extract_ocr(
     request: Request,
     file: UploadFile = File(...),
     docType: str = Query("passport"),
+    clientOcrText: Optional[str] = Form(None),
     api_key: str = Depends(verify_api_key),
     db: Session = Depends(get_db)
 ):
@@ -274,7 +275,7 @@ async def extract_ocr(
     - Permit (Permit Number, Type, Validity Period, Issuing Authority)
     """
     image_bytes = await validate_uploaded_file(file)
-    result = extract_ocr_from_image_bytes(image_bytes, doc_type=docType)
+    result = extract_ocr_from_image_bytes(image_bytes, doc_type=docType, client_ocr_text=clientOcrText)
 
     log_audit_event(
         endpoint="/api/extract",
@@ -391,6 +392,7 @@ async def analyze_full_document(
     selfie: Optional[UploadFile] = File(None),
     docType: Optional[str] = Form(None),
     officerId: Optional[str] = Form(None),
+    clientOcrText: Optional[str] = Form(None),
     api_key: str = Depends(verify_api_key),
     db: Session = Depends(get_db)
 ):
@@ -410,6 +412,7 @@ async def analyze_full_document(
         doc_image_bytes=doc_bytes,
         selfie_image_bytes=selfie_bytes,
         doc_type=effective_doc_type,
+        client_ocr_text=clientOcrText,
         db=db
     )
 

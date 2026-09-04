@@ -13,6 +13,7 @@ def analyze_document_submission(
     doc_image_bytes: bytes,
     selfie_image_bytes: bytes = None,
     doc_type: str = "passport",
+    client_ocr_text: Optional[str] = None,
     db: Optional[Session] = None
 ) -> dict:
     """
@@ -30,7 +31,7 @@ def analyze_document_submission(
     timestamp_str = datetime.now(timezone.utc).strftime("%H:%M:%S")
 
     # 1. OCR Text Extraction tailored to document type & check for type mismatch
-    ocr_result = extract_ocr_from_image_bytes(doc_image_bytes, doc_type=doc_type)
+    ocr_result = extract_ocr_from_image_bytes(doc_image_bytes, doc_type=doc_type, client_ocr_text=client_ocr_text)
     
     if ocr_result.get("isTypeMismatch"):
         raise ValueError(ocr_result.get("mismatchMessage", f"Invalid document type. Please upload a valid {doc_type} file."))
