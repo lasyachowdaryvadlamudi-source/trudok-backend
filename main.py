@@ -94,10 +94,19 @@ async def security_headers_middleware(request: Request, call_next):
 
     start_time = time.time()
 
-    # HTTPS Enforcement in Production
+    # HTTPS Enforcement in Production (allowing health probes and internal port checks)
     if is_production:
         proto = request.headers.get("x-forwarded-proto", "http")
-        if proto != "https" and not request.url.hostname in ["localhost", "127.0.0.1"]:
+        client_host = request.client.host if request.client else ""
+        is_internal_probe = (
+            request.url.path in ["/api/health", "/", "/health", "/docs", "/redoc"]
+            or request.url.hostname in ["localhost", "127.0.0.1", "0.0.0.0"]
+            or client_host in ["127.0.0.1", "localhost", "::1"]
+            or client_host.startswith("10.")
+            or client_host.startswith("172.")
+            or client_host.startswith("192.168.")
+        )
+        if proto != "https" and not is_internal_probe:
             return JSONResponse(
                 status_code=403,
                 content={"error": "HTTPS Required", "detail": "All requests must use TLS/HTTPS encryption."}
