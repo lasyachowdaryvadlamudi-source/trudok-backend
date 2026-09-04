@@ -609,6 +609,50 @@ async def get_dashboard_stats(
     }
 
 
+# SINGLE SCAN DOSSIER RETRIEVAL (GET /api/scans/{scan_id})
+@app.get("/api/scans/{scan_id}")
+@app.get("/api/scan/{scan_id}")
+@limiter.limit(settings.RATE_LIMIT_PER_MINUTE)
+async def get_scan_by_id(
+    scan_id: str,
+    request: Request,
+    officerId: Optional[str] = Query("SSB-OFFICER-01"),
+    api_key: str = Depends(verify_api_key),
+    db: Session = Depends(get_db)
+):
+    clean_id = scan_id.strip()
+    record = db.query(ScanRecord).filter(
+        (ScanRecord.id == clean_id) | (ScanRecord.scan_id == clean_id)
+    ).first()
+
+    if not record:
+        raise HTTPException(status_code=404, detail="Scan record not found in database.")
+
+    try:
+        dossier = json.loads(record.details_json) if record.details_json else {}
+    except Exception:
+        dossier = {}
+
+    dossier["id"] = record.id
+    dossier["scanId"] = record.scan_id
+    dossier["riskScore"] = record.risk_score
+    dossier["statusPill"] = record.status_pill
+    dossier["verdict"] = record.verdict
+    dossier["holderName"] = record.holder_name
+    dossier["documentNumber"] = record.document_number
+
+    client_ip = get_remote_address(request)
+    log_record_access(
+        db=db,
+        officer_id=officerId,
+        record_id=record.id,
+        action="VIEW_DOSSIER_BY_ID",
+        client_ip_hash=hash_client_ip(client_ip)
+    )
+
+    return dossier
+
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
