@@ -88,6 +88,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Security Headers & Anti-Indexing Middleware
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
+    # Allow CORS preflight OPTIONS requests to pass directly to CORSMiddleware
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     start_time = time.time()
 
     # HTTPS Enforcement in Production
