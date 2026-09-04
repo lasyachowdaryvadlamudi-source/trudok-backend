@@ -1,0 +1,170 @@
+{
+  "_disclaimer": "SIMULATED DATABASE — represents integration point for real government ID systems (e.g. UIDAI, passport records) which require official API access not available in this prototype",
+  "records": [
+    {
+      "documentNumber": "EL-84920194",
+      "fullName": "DARIUS VANCE KOWALSKI",
+      "dob": "14 AUG 1979",
+      "expiryDate": "22 NOV 2024",
+      "nationality": "Eldoria (ELD)",
+      "countryCode": "ELD",
+      "status": "EXPIRED",
+      "issuingAuthority": "Passport Office, Capital City",
+      "notes": "Passport expired 2024; suspect of altering DOB to 1984"
+    },
+    {
+      "documentNumber": "NAT-77401928",
+      "fullName": "RICHARD VANCE THORNE",
+      "dob": "12 MAR 1980",
+      "expiryDate": "12 MAR 2031",
+      "nationality": "Canada (CAN)",
+      "countryCode": "CAN",
+      "status": "FLAGGED_RED_NOTICE",
+      "issuingAuthority": "Immigration Bureau",
+      "notes": "Subject aliases: Arthur P. Morrison, Aleksander Novak"
+    },
+    {
+      "documentNumber": "VN-8849201",
+      "fullName": "GURPREET S. DHILLON",
+      "dob": "19 NOV 1979",
+      "expiryDate": "28 AUG 2024",
+      "nationality": "India (IND)",
+      "countryCode": "IND",
+      "status": "PERMIT_EXPIRED",
+      "issuingAuthority": "State Transport Authority",
+      "notes": "Transit permit expired; frame serial VN-8849000 mismatch"
+    },
+    {
+      "documentNumber": "PRM-5520918",
+      "fullName": "RAJESH KUMAR SHRESTHA",
+      "dob": "05 SEP 1982",
+      "expiryDate": "30 SEP 2025",
+      "nationality": "Nepal (NPL)",
+      "countryCode": "NPL",
+      "status": "EXPIRED",
+      "issuingAuthority": "Immigration Office, Birgunj",
+      "notes": "Record year 2025 altered on physical paper to 2026"
+    },
+    {
+      "documentNumber": "VIS-8819204",
+      "fullName": "TARIQ AL-MANSOOR",
+      "dob": "12 JUL 1986",
+      "expiryDate": "14 DEC 2027",
+      "nationality": "United Arab Emirates (ARE)",
+      "countryCode": "ARE",
+      "status": "CERTIFICATE_REVOKED",
+      "issuingAuthority": "Embassy Consular Office",
+      "notes": "Digital visa certificate revoked by consular authority"
+    },
+    {
+      "documentNumber": "IN-V8932011",
+      "fullName": "SARAH ELIZABETH CHEN",
+      "dob": "03 MAR 1991",
+      "expiryDate": "15 OCT 2027",
+      "nationality": "Singapore (SGP)",
+      "countryCode": "SGP",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "High Commission Office",
+      "notes": "Clean legitimate tourist visa record"
+    },
+    {
+      "documentNumber": "P88192041",
+      "fullName": "AMITABH SHARMA",
+      "dob": "21 JAN 1988",
+      "expiryDate": "19 JAN 2030",
+      "nationality": "India (IND)",
+      "countryCode": "IND",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "RPO New Delhi",
+      "notes": "Valid standard biometric passport"
+    },
+    {
+      "documentNumber": "USA-99214012",
+      "fullName": "JOHNATHAN EDWARD MILLER",
+      "dob": "10 OCT 1975",
+      "expiryDate": "14 OCT 2028",
+      "nationality": "United States (USA)",
+      "countryCode": "USA",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Department of State",
+      "notes": "Regular tourist travel record"
+    },
+    {
+      "documentNumber": "DEU-44019284",
+      "fullName": "KLAUS HELMUT SCHMIDT",
+      "dob": "04 APR 1981",
+      "expiryDate": "12 MAY 2029",
+      "nationality": "Germany (DEU)",
+      "countryCode": "DEU",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Bundesdruckerei Berlin",
+      "notes": "Authentic diplomatic passport"
+    },
+    {
+      "documentNumber": "BGD-77192033",
+      "fullName": "MOHAMMAD RASHIDUL HASAN",
+      "dob": "15 DEC 1990",
+      "expiryDate": "01 DEC 2025",
+      "nationality": "Bangladesh (BGD)",
+      "countryCode": "BGD",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "DIP Dhaka",
+      "notes": "Cross-border transit authorization"
+    },
+    {
+      "documentNumber": "LKA-33019482",
+      "fullName": "KAVINDA ANURADHA PERERA",
+      "dob": "28 FEB 1985",
+      "expiryDate": "18 FEB 2027",
+      "nationality": "Sri Lanka (LKA)",
+      "countryCode": "LKA",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Department of Immigration Colombo",
+      "notes": "Clear verified identity record"
+    },
+    {
+      "documentNumber": "NPL-99201488",
+      "fullName": "SUNIL KUMAR ADHIKARI",
+      "dob": "17 JUL 1993",
+      "expiryDate": "19 JUL 2028",
+      "nationality": "Nepal (NPL)",
+      "countryCode": "NPL",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Department of Passports Kathmandu",
+      "notes": "Valid Indo-Nepal border transit permit"
+    },
+    {
+      "documentNumber": "FRA-55401923",
+      "fullName": "CAMILLE MARIE DUPONT",
+      "dob": "23 SEP 1989",
+      "expiryDate": "29 SEP 2029",
+      "nationality": "France (FRA)",
+      "countryCode": "FRA",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Prefecture de Police Paris",
+      "notes": "Legitimate Schengen document"
+    },
+    {
+      "documentNumber": "AUS-22910481",
+      "fullName": "LIAM PATRICK O'CONNOR",
+      "dob": "08 JUN 1994",
+      "expiryDate": "14 JUN 2032",
+      "nationality": "Australia (AUS)",
+      "countryCode": "AUS",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Passport Office Sydney",
+      "notes": "Valid standard travel document"
+    },
+    {
+      "documentNumber": "JPN-77401948",
+      "fullName": "KENJI TAKAHASHI",
+      "dob": "11 NOV 1987",
+      "expiryDate": "20 NOV 2030",
+      "nationality": "Japan (JPN)",
+      "countryCode": "JPN",
+      "status": "VALID_CLEAR",
+      "issuingAuthority": "Ministry of Foreign Affairs Tokyo",
+      "notes": "Clear biometric Japanese passport"
+    }
+  ]
+}

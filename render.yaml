@@ -1,0 +1,28 @@
+databases:
+  - name: trudok-postgres-db
+    plan: free
+    region: oregon
+    databaseName: trudok_db
+    user: trudok_admin
+
+services:
+  - type: web
+    name: trudok-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: API_KEY
+        value: trudok-sih26188-secret-key-2026
+      - key: DATABASE_URL
+        fromDatabase:
+          name: trudok-postgres-db
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        value: "https://verilens-nu.vercel.app,https://verilens.vercel.app,http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
+      - key: PYTHON_VERSION
+        value: 3.11.0

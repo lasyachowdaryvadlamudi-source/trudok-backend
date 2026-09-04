@@ -1,0 +1,49 @@
+{
+  "_comment": "Stamp pattern matching against official reference stamps requires a government-provided reference database not available in this prototype. This endpoint performs real image-forensic checks (edge/color analysis) as a partial substitute.",
+  "patterns": [
+    {
+      "patternId": "STAMP-IND-IMM-01",
+      "country": "India (IND)",
+      "authority": "Bureau of Immigration, Delhi",
+      "type": "ENTRY_IMMIGRATION",
+      "shape": "RECTANGULAR",
+      "inkColorFamily": "VIOLET_BLUE",
+      "expectedEdgeSharpnessMin": 65.0,
+      "expectedColorConsistencyMin": 70.0,
+      "authorizedPorts": ["DEL", "BOM", "BLR", "MAA", "CCU", "RAXAUL_LCS"]
+    },
+    {
+      "patternId": "STAMP-NPL-TRANSIT-02",
+      "country": "Nepal (NPL)",
+      "authority": "Department of Immigration, Birgunj",
+      "type": "BORDER_TRANSIT_PERMIT",
+      "shape": "CIRCULAR_DOUBLE_RING",
+      "inkColorFamily": "CRIMSON_RED",
+      "expectedEdgeSharpnessMin": 60.0,
+      "expectedColorConsistencyMin": 68.0,
+      "authorizedPorts": ["KTM_TIA", "BIRGUNJ", "KAKARBHITTA", "BELAHIYA"]
+    },
+    {
+      "patternId": "STAMP-SCHENGEN-03",
+      "country": "Schengen Area (EU)",
+      "authority": "Border Guard Directorate",
+      "type": "SCHENGEN_ENTRY",
+      "shape": "RECTANGULAR_ROUNDED",
+      "inkColorFamily": "NAVY_BLACK",
+      "expectedEdgeSharpnessMin": 72.0,
+      "expectedColorConsistencyMin": 75.0,
+      "authorizedPorts": ["CDG", "FRA", "AMS", "FCO", "MAD"]
+    },
+    {
+      "patternId": "STAMP-ARE-VISA-04",
+      "country": "United Arab Emirates (ARE)",
+      "authority": "GDRFA Dubai",
+      "type": "TOURIST_ENTRY",
+      "shape": "OCTAGONAL_SECURITY",
+      "inkColorFamily": "ROYAL_BLUE",
+      "expectedEdgeSharpnessMin": 70.0,
+      "expectedColorConsistencyMin": 72.0,
+      "authorizedPorts": ["DXB", "AUH", "SHJ"]
+    }
+  ]
+}
