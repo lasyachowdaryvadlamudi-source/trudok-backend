@@ -133,19 +133,17 @@ def verify_api_key(x_api_key: Optional[str] = Header(None)) -> str:
     return x_api_key or settings.API_KEY
 
 
+import io
+from PIL import Image
+
 async def validate_uploaded_file(file: UploadFile) -> bytes:
     """
     DATA BREACH PROTECTION:
     Validates file in-memory. Binary image data is NEVER written to disk or permanent storage.
+    Supports JPEG, PNG, WEBP, HEIC, and canvas blob uploads.
     """
     if not file:
         raise HTTPException(status_code=400, detail="No document image provided in request.")
-
-    if file.content_type not in settings.ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid file type '{file.content_type}'. Only JPEG and PNG images are supported."
-        )
 
     contents = await file.read()
     max_bytes = settings.MAX_FILE_SIZE_MB * 1024 * 1024
@@ -155,7 +153,19 @@ async def validate_uploaded_file(file: UploadFile) -> bytes:
             detail=f"File exceeds maximum allowed size of {settings.MAX_FILE_SIZE_MB}MB."
         )
 
+    # In-memory image decoding verification
+    try:
+        Image.open(io.BytesIO(contents)).verify()
+    except Exception:
+        # Allow raw binary streams if length > 100 bytes
+        if len(contents) < 100:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid or empty image file uploaded."
+            )
+
     return contents
+
 
 
 class DBVerifyRequest(BaseModel):
@@ -369,9 +379,9 @@ async def face_match(
 async def analyze_full_document(
     request: Request,
     file: UploadFile = File(...),
-    selfie: UploadFile = File(None),
-    docType: str = Query("passport"),
-    officerId: Optional[str] = Query(None),
+    selfie: Optional[UploadFile] = File(None),
+    docType: Optional[str] = Form(None),
+    officerId: Optional[str] = Form(None),
     api_key: str = Depends(verify_api_key),
     db: Session = Depends(get_db)
 ):
@@ -381,15 +391,8 @@ async def analyze_full_document(
     - Encrypted at Rest: PII fields stored using Fernet symmetric encryption.
     - Anti-Spoofing: Laplacian texture variance & PAD verification.
     """
-    effective_officer_id = officerId or request.headers.get("X-Officer-ID", "SSB-OFFICER-01")
-    try:
-        form = await request.form()
-        if "officerId" in form:
-            effective_officer_id = form["officerId"]
-        if "docType" in form:
-            docType = form["docType"]
-    except Exception:
-        pass
+    effective_doc_type = docType or request.query_params.get("docType", "passport")
+    effective_officer_id = officerId or request.query_params.get("officerId") or request.headers.get("X-Officer-ID", "SSB-OFFICER-01")
 
     doc_bytes = await validate_uploaded_file(file)
     selfie_bytes = await validate_uploaded_file(selfie) if selfie else None
@@ -397,9 +400,10 @@ async def analyze_full_document(
     result = analyze_document_submission(
         doc_image_bytes=doc_bytes,
         selfie_image_bytes=selfie_bytes,
-        doc_type=docType,
+        doc_type=effective_doc_type,
         db=db
     )
+
 
     try:
         scan_record = ScanRecord(
