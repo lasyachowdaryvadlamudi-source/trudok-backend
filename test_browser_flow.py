@@ -62,22 +62,29 @@ async def run():
         title = await page.title()
         print(f"Page loaded successfully: {page.url} | Title: {title}")
 
+        # Select 'National ID' document type button
+        print("\n2. Selecting 'National ID' document card...")
+        nid_btn = page.locator('button:has-text("National ID")')
+        await nid_btn.click()
+        await page.wait_for_timeout(1000)
+
         # Upload the test file to the hidden file picker
-        print("\n2. Uploading test passport image to #scanner-file-picker...")
+        test_img_path = os.path.abspath("test_aadhaar_sample.png")
+        print(f"\n3. Uploading test Aadhaar image ({test_img_path}) to #scanner-file-picker...")
         file_input = page.locator('#scanner-file-picker')
         await file_input.wait_for(state="attached", timeout=10000)
         await file_input.set_input_files(test_img_path)
         await page.wait_for_timeout(1500)
 
         # Look for submit / analyze button
-        print("\n3. Submitting document for analysis...")
+        print("\n4. Submitting document for analysis...")
         analyze_btn = page.locator('button:has-text("Run Forensic Screening")')
         await analyze_btn.wait_for(state="visible", timeout=10000)
         btn_text = await analyze_btn.text_content()
         print(f"Found and clicking action button: '{btn_text.strip()}'")
         await analyze_btn.click()
 
-        print("\n4. Waiting for screening analysis completion and transition to /analysis/:id...")
+        print("\n5. Waiting for screening analysis completion and transition to /analysis/:id...")
         # Wait up to 35 seconds for analysis page
         try:
             await page.wait_for_url(lambda u: "/analysis/" in u, timeout=35000)
@@ -108,6 +115,15 @@ async def run():
             or "Verified" in body_text 
             or "Flagged" in body_text
         )
+
+        has_extracted_name = "RAJESH KUMAR SHARMA" in body_text.upper()
+        has_extracted_number = "4521 8892 1039" in body_text or "452188921039" in body_text
+
+        print("\n=====================================================")
+        print("HEADLESS BROWSER TEST RESULTS:")
+        print("=====================================================")
+        print(f"Extracted Name ('RAJESH KUMAR SHARMA') Visible in UI: {has_extracted_name}")
+        print(f"Extracted Number ('4521 8892 1039') Visible in UI: {has_extracted_number}")
 
         print("\n=====================================================")
         print("HEADLESS BROWSER TEST RESULTS:")
